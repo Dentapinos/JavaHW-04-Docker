@@ -63,7 +63,33 @@ WORKDIR /app</br>
 ARG JAR_FILE=build/libs/javaHW-05-0.0.1-SNAPSHOT.jar</br>
 COPY ${JAR_FILE} app.jar</br>
 EXPOSE 8080</br>
-ENTRYPOINT ["java","-jar","app.jar"]</br>
+#ENTRYPOINT ["java","-jar","app.jar"]</br>
+ENTRYPOINT ["java", "-Dspring.profiles.active=docker", "-jar", "app.jar"]</br>
+
+Дополнительно создаем настройки для нашего приложения
+</br>
+Файл <span style="color:yellow">application.properties
+</br><span style="color:green">
+spring.application.name=javaHW-05</br>
+spring.profiles.active=dev
+
+
+Файл <span style="color:yellow">application-dev.properties
+</br><span style="color:green"></br>
+spring.datasource.password=pass1234</br>
+spring.datasource.username=root</br>
+spring.datasource.url=jdbc:mysql://localhost:3307/app</br>
+spring.jpa.show-sql=true</br>
+spring.jpa.hibernate.ddl-auto=update
+
+
+Файл <span style="color:yellow">application-docker.properties
+</br><span style="color:green">
+spring.datasource.username=\${DB_USER}</br>
+spring.datasource.password=\${DB_PASSWORD}</br>
+spring.datasource.url=jdbc:mysql://\${DB_HOST}/app</br>
+spring.jpa.show-sql=true</br>
+spring.jpa.hibernate.ddl-auto=update</br>
 
 Создаем jar-ник</br>
 <span style="color:green">
@@ -77,7 +103,8 @@ docker build -t java-hw05:latest .
 Указываем порт внешний и внутренний 8081:8080, указываем контейнер с в котором запущена наша база DB_HOST=mysql-DB
 Указываем порт базы  DB_PORT=3307
 </br><span style="color:green">
-docker run --name container-hw-05 --network mydocknet -p 8081:8080 -e DB_HOST=mysql-DB -e DB_PORT=3307 -d java-hw05:latest
+docker run --name my-app --network mydocknet -p 8080:8080 -e DB_USER=root -e DB_PASSWORD=pass1234 -e DB_HOST=mysql-DB  -d java-hw05:latest
+
 
 
 ## Authors
